@@ -741,7 +741,7 @@ window.gameData = {
         unit: "million monthly listeners",
         data: spotifyArtists,
         icon: 'fab fa-spotify',
-        locked: false,
+        locked: true,
         isTodaysCategory: false
     },
     instagram: {
