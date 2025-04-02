@@ -742,7 +742,7 @@ window.gameData = {
         data: spotifyArtists,
         icon: 'fab fa-spotify',
         locked: true,
-        isTodaysCategory: false
+        isTodaysCategory: true
     },
     instagram: {
         title: "Top 100 Most Followed People on Instagram",
@@ -750,7 +750,7 @@ window.gameData = {
         data: instagramFollowers,
         icon: 'fab fa-instagram',
         locked: true,
-        isTodaysCategory: true
+        isTodaysCategory: false
     },
     spotify: {
         title: "Top 100 Most Played Songs on Spotify",
