@@ -1606,14 +1606,15 @@ function normalizeGuess(guess) {
         .replace(/^a\s+/g, '')       // Remove 'a' from start
         .replace(/^an\s+/g, '')      // Remove 'an' from start
         .trim();
-    
-    // Common abbreviations and alternative names
+
+    // Common alternatives mapping
     const alternatives = {
         // Countries
         "us": "united states",
         "usa": "united states",
         "america": "united states",
         "uk": "united kingdom",
+        "gb": "united kingdom",
         "uae": "united arab emirates",
         "holland": "netherlands",
         "burma": "myanmar",
@@ -1623,12 +1624,8 @@ function normalizeGuess(guess) {
         "the weeknd": "weeknd",
         "j cole": "j. cole",
         "dr dre": "dr. dre",
-        "post malone": "post malone",
-        "21 savage": "21 savage",
-        "lil nas x": "lil nas x",
-        "lil wayne": "lil wayne",
-        "jay z": "jay-z",
         "jayz": "jay-z",
+        "jay z": "jay-z",
         
         // Apps
         "whatsapp": "whatsapp messenger",
@@ -1637,17 +1634,10 @@ function normalizeGuess(guess) {
         "ig": "instagram",
         "insta": "instagram",
         "snap": "snapchat",
-        "tiktok": "tik tok",
-        
-        // Movies/Shows
-        "stranger things": "stranger things",
-        "the stranger things": "stranger things",
-        "squid game": "squid game",
-        "the squid game": "squid game",
-        "wednesday": "wednesday",
-        "the wednesday": "wednesday"
+        "tiktok": "tik tok"
     };
     
+    // Return the alternative if it exists, otherwise return the normalized value
     return alternatives[normalized] || normalized;
 }
 
@@ -1656,15 +1646,66 @@ function checkAnswer(guess, correctAnswer) {
     const normalizedGuess = normalizeGuess(guess);
     const normalizedAnswer = normalizeGuess(correctAnswer);
     
-    // Direct match after normalization
+    // 1. Direct match after normalization
     if (normalizedGuess === normalizedAnswer) {
         return true;
     }
     
-    // Check if it's a close match (for minor typos)
+    // 2. Check for high similarity (for typos)
     const similarity = calculateStringSimilarity(normalizedGuess, normalizedAnswer);
-    if (similarity > 0.85) { // 85% similarity threshold
+    if (similarity > 0.9) { // Increased threshold for better accuracy
         return true;
+    }
+    
+    // 3. Check for abbreviations
+    if (isAbbreviation(normalizedGuess, normalizedAnswer)) {
+        return true;
+    }
+    
+    return false;
+}
+
+function isCommonVariation(guess, answer) {
+    // Remove all spaces
+    const noSpaceGuess = guess.replace(/\s+/g, '');
+    const noSpaceAnswer = answer.replace(/\s+/g, '');
+    if (noSpaceGuess === noSpaceAnswer) return true;
+    
+    // Check for common abbreviations
+    if (isAbbreviation(guess, answer)) return true;
+    
+    // Check for possessive forms
+    const noPossessiveGuess = guess.replace(/'s$/, '');
+    const noPossessiveAnswer = answer.replace(/'s$/, '');
+    if (noPossessiveGuess === noPossessiveAnswer) return true;
+    
+    return false;
+}
+
+function isAbbreviation(guess, answer) {
+    // Handle cases like "USA" = "United States of America"
+    const guessWords = guess.split(' ');
+    const answerWords = answer.split(' ');
+    
+    // If guess is shorter and might be an abbreviation
+    if (guessWords.length === 1 && answerWords.length > 1) {
+        // Check if guess matches first letters of answer words
+        const abbreviation = answerWords
+            .map(word => word[0])
+            .join('')
+            .toLowerCase();
+        
+        if (guess === abbreviation) return true;
+    }
+    
+    // Handle cases like "United States" = "USA"
+    if (answerWords.length === 1 && guessWords.length > 1) {
+        const abbreviation = guessWords
+            .map(word => word[0])
+            .join('')
+            .toLowerCase();
+        
+        if (answer === abbreviation) return true;
     }
     
     return false;
