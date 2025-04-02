@@ -912,36 +912,41 @@ function initializeCategoriesList() {
     categoriesContainer.innerHTML = '';
 
     // Sort categories into locked and unlocked groups
-    const sortedCategories = Object.entries(gameCategories).sort((a, b) => {
-        // Today's category comes first
-        if (a[1].isTodaysCategory && !b[1].isTodaysCategory) return -1;
-        if (!a[1].isTodaysCategory && b[1].isTodaysCategory) return 1;
-        
-        // Then unlocked categories
-        if (a[1].locked !== b[1].locked) {
-            return a[1].locked ? 1 : -1;
-        }
-        
-        // If both are locked or both are unlocked, maintain original order
-        return 0;
-    });
+    const sortedCategories = sortCategories(Object.entries(gameCategories).map(([key, category]) => ({
+        ...category,
+        name: category.title || key,
+        icon: getCategoryIcon(key)
+    })));
 
-    sortedCategories.forEach(([key, category]) => {
-        const categoryData = {
-            ...category,
-            name: category.title || key,
-            icon: getCategoryIcon(key)
-        };
-        const item = createCategoryItem(categoryData);
+    sortedCategories.forEach((category) => {
+        const item = createCategoryItem(category);
         item.setAttribute('tabindex', '0');
 
         item.addEventListener('click', () => {
-            if (key !== currentCategory) {
-                handleCategorySelection(key);
+            if (category.name !== currentCategory) {
+                handleCategorySelection(category.name);
             }
         });
 
         categoriesContainer.appendChild(item);
+    });
+}
+
+function sortCategories(categories) {
+    return categories.sort((a, b) => {
+        // First, separate unlocked and locked categories
+        if (a.locked !== b.locked) {
+            return a.locked ? 1 : -1;
+        }
+        
+        // If both are locked, prioritize today's category
+        if (a.locked && b.locked) {
+            if (a.isTodaysCategory) return -1;
+            if (b.isTodaysCategory) return 1;
+        }
+        
+        // Keep original order for remaining categories
+        return 0;
     });
 }
 
