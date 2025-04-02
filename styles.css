@@ -2438,16 +2438,15 @@ button:hover {
     gap: 0;
 }
 
-.category-item.todays-category {
+.todays-category {
     background-color: #F5F8FF !important;
-    border-left: 4px solid #4475F1;
     position: relative;
 }
 
-.category-item.todays-category::after {
+.todays-category::after {
     content: 'NEW';
     position: absolute;
-    right: 12px;
+    right: 40px;
     top: 50%;
     transform: translateY(-50%);
     background-color: #4475F1;
@@ -2460,22 +2459,20 @@ button:hover {
     box-shadow: 0 2px 4px rgba(68, 117, 241, 0.2);
 }
 
-.category-item.todays-category .icon {
+.todays-category .icon {
     color: #4475F1;
 }
 
-.category-item.todays-category .text {
+.todays-category .text {
     color: #1a1a1a;
     font-weight: 500;
 }
 
-.category-item.todays-category:hover {
+.todays-category:hover {
     background-color: #EDF1FF !important;
     transition: background-color 0.2s ease;
 }
 
-/* Adjust lock icon position for today's category */
-.category-item.todays-category .lock-icon {
-    right: 60px;
-    /* Make space for NEW badge */
+.todays-category .lock-icon {
+    right: 12px;
 }
