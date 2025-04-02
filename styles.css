@@ -2457,9 +2457,14 @@ button:hover {
 
 .todays-category .text::after {
     content: 'Added Today';
-    font-size: 0.85em;
-    color: #000000;
-    font-weight: 500;
+    font-size: 0.9em;
+    color: #4475F1;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    background-color: #EBF0FF;
+    padding: 2px 8px;
+    border-radius: 4px;
+    width: fit-content;
 }
 
 .todays-category:hover {
