@@ -2441,22 +2441,7 @@ button:hover {
 .todays-category {
     background-color: #F5F8FF !important;
     position: relative;
-}
-
-.todays-category::after {
-    content: 'NEW';
-    position: absolute;
-    right: 40px;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: #4475F1;
-    color: white;
-    padding: 4px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 4px rgba(68, 117, 241, 0.2);
+    border-left: 4px solid #4475F1;
 }
 
 .todays-category .icon {
@@ -2466,6 +2451,17 @@ button:hover {
 .todays-category .text {
     color: #1a1a1a;
     font-weight: 500;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.todays-category .text::after {
+    content: 'Added Today';
+    font-size: 11px;
+    color: #4475F1;
+    font-weight: 600;
+    letter-spacing: 0.3px;
 }
 
 .todays-category:hover {

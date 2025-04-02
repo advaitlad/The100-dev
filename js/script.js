@@ -962,11 +962,21 @@ function createCategoryItem(category) {
         item.classList.add('todays-category');
     }
     
-    item.innerHTML = `
-        <div class="icon">${category.icon}</div>
-        <div class="text">${category.name}</div>
-        ${category.locked ? '<div class="lock-icon"><i class="fas fa-lock"></i></div>' : ''}
-    `;
+    const icon = document.createElement('div');
+    icon.className = 'icon';
+    icon.innerHTML = category.icon;
+    
+    const text = document.createElement('div');
+    text.className = 'text';
+    text.textContent = category.name;
+    
+    const lockIcon = category.locked ? '<div class="lock-icon"><i class="fas fa-lock"></i></div>' : '';
+    
+    item.appendChild(icon);
+    item.appendChild(text);
+    if (lockIcon) {
+        item.insertAdjacentHTML('beforeend', lockIcon);
+    }
     
     return item;
 }
