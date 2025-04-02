@@ -184,14 +184,21 @@ function initializeDOMElements() {
 
 // Wait for DOM to be ready before initializing
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize game data first
-    if (!window.gameData) {
-        console.error('Game data not found');
-        return;
-    }
-    
-    // Then initialize DOM elements
-    initializeDOMElements();
+    // Function to check if game data is loaded
+    const checkGameData = () => {
+        if (window.gameData) {
+            // Game data is loaded, initialize the game
+            gameCategories = window.gameData;
+            initializeDOMElements();
+        } else {
+            // Game data not loaded yet, retry after a short delay
+            console.log('Waiting for game data to load...');
+            setTimeout(checkGameData, 100);
+        }
+    };
+
+    // Start checking for game data
+    checkGameData();
 });
 
 // Add function to show refresh confirmation modal
@@ -269,6 +276,24 @@ function initializeTiles() {
 }
 
 function checkGuess(guess) {
+    // Check if gameCategories and current category exist
+    if (!gameCategories || !gameCategories[currentCategory]) {
+        console.error('Category data not found:', currentCategory);
+        return { 
+            score: 0, 
+            message: "Error: Category data not found" 
+        };
+    }
+
+    // Check if category data exists
+    if (!gameCategories[currentCategory].data) {
+        console.error('Category data is undefined for:', currentCategory);
+        return { 
+            score: 0, 
+            message: "Error: Category data is undefined" 
+        };
+    }
+
     const categoryData = gameCategories[currentCategory].data.slice(0, 100); // Only check first 100 items
     
     // Find matching item using our new checkAnswer function
