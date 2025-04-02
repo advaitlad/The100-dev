@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The 100</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+    <link rel="shortcut icon" href="assets/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <!-- User Profile Button -->
+    <button id="profile-toggle" class="profile-toggle loading"></button>
+
+    <!-- Categories Toggle (existing) -->
+    <button id="categories-toggle" class="categories-toggle">
+        <i class="fas fa-th-list"></i>
+        Categories
+    </button>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="auth-modal hidden">
+        <div class="auth-content">
+            <button id="close-login" class="close-modal"><i class="fas fa-times"></i></button>
+            <h2><i class="fas fa-sign-in-alt"></i> Login</h2>
+            <div id="login-error" class="auth-error hidden"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-identifier">Username or Email</label>
+                    <input type="text" id="login-identifier" placeholder="Enter your username or email" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="auth-button">Login</button>
+            </form>
+            <div class="auth-switch">
+                Don't have an account? <a href="#" id="show-signup">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="auth-modal hidden">
+        <div class="auth-content">
+            <h2><i class="fas fa-user-plus"></i> Sign Up</h2>
+            <div id="signup-error" class="auth-error hidden"></div>
+            <form id="signup-form">
+                <div class="form-group">
+                    <label for="signup-username">Username</label>
+                    <input type="text" id="signup-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input type="email" id="signup-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input type="password" id="signup-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm-password">Confirm Password</label>
+                    <input type="password" id="signup-confirm-password" required>
+                </div>
+                <button type="submit" class="auth-button">Sign Up</button>
+            </form>
+            <p class="auth-switch">Already have an account? <a href="#" id="show-login">Login</a></p>
+        </div>
+    </div>
+
+    <!-- User Profile Modal -->
+    <div class="side-panel">
+        <div class="side-panel-header">
+            <h2>Categories</h2>
+            <button class="close-side-panel">&times;</button>
+        </div>
+        <div class="category-search">
+            <input type="text" id="category-search" placeholder="Search categories...">
+        </div>
+        <div class="categories-list">
+            <div id="no-results" class="no-results hidden">
+                <i class="fas fa-search"></i>
+                <p>No matching categories found</p>
+            </div>
+            <div id="categories-container">
+                <!-- Categories will be dynamically added here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <div class="game-header">
+            <div class="title-section">
+                <div class="title-container">
+                    <div class="logo">
+                        <div class="logo-circle">
+                            <div class="logo-inner">100</div>
+                        </div>
+                    </div>
+                    <h1>The 100</h1>
+                </div>
+                <div class="game-subtitle">
+                    Everyone knows the best or the second best but can you get the 100th?
+                </div>
+                <div class="category-badge">
+                    <span class="category-label">CATEGORY</span>
+                    <h2 id="current-category">Top 100 Countries by Area</h2>
+                </div>
+            </div>
+            <div class="stats-section">
+                <div class="stat-box">
+                    <span class="stat-label">CHANCES LEFT</span>
+                    <span id="chances" class="stat-value">5</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">SCORE</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+            </div>
+            <button id="tutorial-btn" class="tutorial-btn">
+                <i class="fas fa-question-circle"></i>
+                How to Play
+            </button>
+        </div>
+
+        <div class="game-play">
+            <input type="text" id="guess-input" placeholder="Enter your guess...">
+            <button id="submit-guess">Submit Guess</button>
+        </div>
+
+        <div class="tiles-container">
+            <div class="tiles-wrapper">
+                <!-- Tiles will be added here dynamically -->
+            </div>
+        </div>
+
+        <div class="previous-guesses">
+            <h3>Previous Guesses:</h3>
+            <ul id="guesses-list"></ul>
+        </div>
+
+        <div id="game-over" class="hidden">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <button id="play-again">Play Again</button>
+        </div>
+
+        <div id="popup" class="popup hidden">
+            <div class="popup-content">
+                <p>Not in the Top 100!</p>
+            </div>
+        </div>
+
+        <div id="invalid-popup" class="popup hidden">
+            <div class="popup-content">
+                <p>Invalid Country!</p>
+            </div>
+        </div>
+
+        <div id="duplicate-popup" class="popup hidden">
+            <div class="popup-content">
+                <p>Already Guessed!</p>
+            </div>
+        </div>
+
+        <div id="tutorial-modal" class="tutorial-modal hidden">
+            <div class="tutorial-content">
+                <h2><i class="fas fa-graduation-cap"></i> How to Play</h2>
+
+                <div class="tutorial-step">
+                    <div class="step-number">1</div>
+                    <h3>Choose a Category</h3>
+                    <p>Challenge yourself across our diverse categories! Whether you're exploring the world's largest
+                        countries, tracking global population trends, discovering social media superstars, ranking
+                        hit songs, or guessing the most downloaded mobile apps - there's something here to test
+                        everyone's knowledge.</p>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
+                    <h3>Scoring System</h3>
+                    <p>You have 5 chances to guess items from the top 100. Points are awarded based on the position you
+                        guess:</p>
+                    <ul class="strategy-list">
+                        <li>Position #1 = 1 point</li>
+                        <li>Position #50 = 50 points</li>
+                        <li>Position #100 = 100 points</li>
+                        <li>Not in top 100 = 0 points</li>
+                    </ul>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">3</div>
+                    <h3>Example Guesses</h3>
+                    <p>Let's use a hypothetical category "Most Watched Movies" to understand the scoring -</p>
+
+                    <div class="example-box">
+                        <div class="example-item">
+                            If you guess "Avatar" (#1 in rankings)
+                            <span class="points">1 points</span>
+                        </div>
+                        <div class="example-item">
+                            If you guess "The Lion King" (#51 in rankings)
+                            <span class="points">51 points</span>
+                        </div>
+                        <div class="example-item">
+                            If you guess "Inception" (#100 in rankings)
+                            <span class="points">100 points</span>
+                        </div>
+                        <div class="example-item warning">
+                            If you guess "The Matrix" (#156 - not in top 100)
+                            <span class="points zero">0 points</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">4</div>
+                    <h3>Strategy Tips</h3>
+                    <p>Here are some tips to maximize your score:</p>
+                    <ul class="strategy-list">
+                        <li>Start with the a popular item you can think of to find a reference point.</li>
+                        <li>Pay attention to the values shown for correct guesses.</li>
+                        <li>Use your knowledge of trends and statistics.</li>
+                        <li>Learn from previous games to improve your strategy.</li>
+                    </ul>
+                </div>
+
+                <button id="close-tutorial" class="close-tutorial">Got it!</button>
+            </div>
+        </div>
+
+        <div id="category-modal" class="category-modal hidden">
+            <div class="category-modal-header">
+                <h2>Choose a Category</h2>
+                <button class="close-category-modal">&times;</button>
+            </div>
+            <div class="category-grid">
+                <!-- Categories will be added here dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="profile-modal hidden">
+        <button id="close-profile" class="close-modal"><i class="fas fa-times"></i></button>
+        <div class="profile-content">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h2 id="profile-username">Username</h2>
+            </div>
+
+            <div class="stat-group">
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <i class="fas fa-gamepad"></i>
+                        <div class="stat-value" id="games-played">0</div>
+                    </div>
+                    <div class="stat-label">Games Played</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-content">
+                        <i class="fas fa-trophy"></i>
+                        <div class="stat-value" id="high-score">0</div>
+                    </div>
+                    <div class="stat-label">High Score</div>
+                    <div class="stat-sublabel" id="high-score-category"></div>
+                </div>
+            </div>
+
+            <div class="streak-section">
+                <div class="streak-card current">
+                    <div class="streak-content">
+                        <i class="fas fa-fire"></i>
+                        <div class="streak-value" id="current-streak">0</div>
+                    </div>
+                    <div class="streak-label">Current Streak</div>
+                </div>
+                <div class="streak-card best">
+                    <div class="streak-content">
+                        <i class="fas fa-crown"></i>
+                        <div class="streak-value" id="best-streak">0</div>
+                    </div>
+                    <div class="streak-label">Best Streak</div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button id="logout-button" class="profile-btn logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+                <button id="delete-account-button" class="profile-btn delete-btn">
+                    <i class="fas fa-trash-alt"></i>
+                    Delete Account
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-confirm-modal" class="confirm-modal hidden">
+        <div class="confirm-content">
+            <div class="modal-header">
+                <div class="warning-icon">
+                    <i class="fas fa-heart-crack"></i>
+                </div>
+                <h2>We'll Miss You!</h2>
+                <p>This will delete your game progress and stats. Ready to say goodbye? 🎮</p>
+            </div>
+            <div class="modal-body">
+                <div class="password-input-container">
+                    <div class="input-wrapper">
+                        <input type="password" id="delete-confirm-password" placeholder="Enter your password">
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <div class="error-message"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-delete" class="modal-btn cancel">
+                    <i class="fas fa-heart"></i>
+                    Stay
+                </button>
+                <button id="confirm-delete" class="modal-btn delete">
+                    <i class="fas fa-hand-peace"></i>
+                    Goodbye
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="error-modal" class="confirm-modal hidden">
+        <div class="confirm-content">
+            <div class="modal-header">
+                <div class="warning-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <h2>Oops!</h2>
+                <p id="error-message">Something went wrong.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="error-ok-btn" class="modal-btn confirm">
+                    <i class="fas fa-check"></i>
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this right after your other modals -->
+    <div id="refresh-confirm-modal" class="confirm-modal hidden">
+        <div class="confirm-content">
+            <div class="modal-header">
+                <div class="warning-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h2>Wait!</h2>
+                <p>You have an active game in progress. Are you sure you want to refresh? Your progress will be lost.
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button id="cancel-refresh" class="modal-btn cancel">
+                    <i class="fas fa-times"></i>
+                    Stay
+                </button>
+                <button id="confirm-refresh" class="modal-btn delete">
+                    <i class="fas fa-sync"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+    <!-- Initialize Firebase -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCX4l7eN8gstigTBI48kt5sQEbSJvbf-1A",
+            authDomain: "the100-dev.firebaseapp.com",
+            projectId: "the100-dev",
+            storageBucket: "the100-dev.firebasestorage.app",
+            messagingSenderId: "584842863680",
+            appId: "1:584842863680:web:7dc853fe68f27baf042ba5",
+            measurementId: "G-4ML5DYYJJ9"
+        };
+
+        // Initialize Firebase
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            window.firebase = firebase;
+            window.auth = firebase.auth();
+            window.db = firebase.firestore();
+            console.log('Firebase initialized successfully');
+        } catch (error) {
+            console.error('Firebase initialization error:', error);
+        }
+    </script>
+
+    <!-- App Scripts -->
+    <script src="js/categories-data.js"></script>
+    <script src="js/firebase-service.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>
