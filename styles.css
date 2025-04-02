@@ -2441,7 +2441,6 @@ button:hover {
 .todays-category {
     background-color: #F5F8FF !important;
     position: relative;
-    border-left: 4px solid #4475F1;
 }
 
 .todays-category .icon {
@@ -2459,7 +2458,7 @@ button:hover {
 .todays-category .text::after {
     content: 'Added Today';
     font-size: 11px;
-    color: #4475F1;
+    color: #FFB800;
     font-weight: 600;
     letter-spacing: 0.3px;
 }
