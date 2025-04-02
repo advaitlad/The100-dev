@@ -2437,3 +2437,34 @@ button:hover {
     flex-direction: column;
     gap: 0;
 }
+
+.category-item.todays-category {
+    background-color: #EBF0FF;
+    border-left: 4px solid #4475F1;
+}
+
+.category-item.todays-category .text {
+    color: #4475F1;
+    font-weight: 600;
+}
+
+.category-item.todays-category .icon {
+    color: #4475F1;
+}
+
+.category-item.todays-category::before {
+    content: "NEW";
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    background-color: #4475F1;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    font-weight: 600;
+}
+
+.category-item.todays-category:hover {
+    background-color: #E2E8F0;
+}

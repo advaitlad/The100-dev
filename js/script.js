@@ -913,10 +913,15 @@ function initializeCategoriesList() {
 
     // Sort categories into locked and unlocked groups
     const sortedCategories = Object.entries(gameCategories).sort((a, b) => {
-        // If one is locked and the other isn't, unlocked comes first
+        // Today's category comes first
+        if (a[1].isTodaysCategory && !b[1].isTodaysCategory) return -1;
+        if (!a[1].isTodaysCategory && b[1].isTodaysCategory) return 1;
+        
+        // Then unlocked categories
         if (a[1].locked !== b[1].locked) {
             return a[1].locked ? 1 : -1;
         }
+        
         // If both are locked or both are unlocked, maintain original order
         return 0;
     });
@@ -941,32 +946,23 @@ function initializeCategoriesList() {
 }
 
 function createCategoryItem(category) {
-    const isLoggedIn = window.userManager?.currentUser != null;
     const item = document.createElement('div');
-    // Only add locked class if user is not logged in and category is locked
-    item.className = `category-item ${(!isLoggedIn && category.locked) ? 'locked' : ''}`;
-
-    // Create icon container
-    const iconContainer = document.createElement('div');
-    iconContainer.className = 'icon';
-    iconContainer.style.color = '#4475F1';
-    iconContainer.innerHTML = category.icon;
-    item.appendChild(iconContainer);
-
-    // Create text element
-    const text = document.createElement('div');
-    text.className = 'text';
-    text.textContent = category.title || category.name;
-    item.appendChild(text);
-
-    // Add lock icon only for locked categories when user is not logged in
-    if (!isLoggedIn && category.locked) {
-        const lockIcon = document.createElement('div');
-        lockIcon.className = 'lock-icon';
-        lockIcon.innerHTML = '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>';
-        item.appendChild(lockIcon);
+    item.className = 'category-item';
+    
+    if (category.locked) {
+        item.classList.add('locked');
     }
-
+    
+    if (category.isTodaysCategory) {
+        item.classList.add('todays-category');
+    }
+    
+    item.innerHTML = `
+        <div class="icon">${category.icon}</div>
+        <div class="text">${category.name}</div>
+        ${category.locked ? '<div class="lock-icon"><i class="fas fa-lock"></i></div>' : ''}
+    `;
+    
     return item;
 }
 

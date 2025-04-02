@@ -725,49 +725,56 @@ window.gameData = {
         unit: "km²",
         data: countriesByArea,
         icon: 'fas fa-globe-americas',
-        locked: false
+        locked: false,
+        isTodaysCategory: false
     },
     population: {
         title: "Top 100 Countries by Population",
         unit: "millionpeople",
         data: countriesByPopulation,
         icon: 'fas fa-users',
-        locked: false
+        locked: false,
+        isTodaysCategory: false
     },
     spotifyArtists: {
         title: "Top 100 Most Streamed Artists on Spotify",
         unit: "million monthly listeners",
         data: spotifyArtists,
         icon: 'fab fa-spotify',
-        locked: false
+        locked: false,
+        isTodaysCategory: false
     },
     instagram: {
         title: "Top 100 Most Followed People on Instagram",
         unit: "million followers",
         data: instagramFollowers,
         icon: 'fab fa-instagram',
-        locked: true
+        locked: true,
+        isTodaysCategory: true
     },
     spotify: {
         title: "Top 100 Most Played Songs on Spotify",
         unit: "billion plays",
         data: spotifyTop100,
         icon: 'fab fa-spotify',
-        locked: true
+        locked: true,
+        isTodaysCategory: false
     },
     netflix: {
         title: "Top 100 Most Watched Movies on Netflix",
         data: netflixTop100,
         unit: 'M hours',
         icon: 'fa-solid fa-tv',
-        locked: true
+        locked: true,
+        isTodaysCategory: false
     },
     mobileApps: {
         title: "Top 100 Most Downloaded Mobile Apps in 2024",
         unit: "million downloads",
         data: mobileApps,
         icon: 'fas fa-mobile-alt',
-        locked: true
+        locked: true,
+        isTodaysCategory: false
     }
 };
 
