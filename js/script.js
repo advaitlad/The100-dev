@@ -296,14 +296,19 @@ function checkGuess(guess) {
 }
 
 function updateUI(guess, result) {
-    // Check for duplicate guess first
-    if (guessedCountries.includes(guess.toLowerCase())) {
+    // Check for duplicate guess first, including variations
+    const normalizedCurrentGuess = normalizeGuess(guess);
+    const isDuplicate = guessedCountries.some(previousGuess => 
+        normalizeGuess(previousGuess) === normalizedCurrentGuess
+    );
+
+    if (isDuplicate) {
         showPopup('duplicate');
         return;
     }
 
-    // Add the guess to guessedCountries list regardless of whether it's correct or not
-    guessedCountries.push(guess.toLowerCase());
+    // Add the normalized guess to guessedCountries list
+    guessedCountries.push(normalizedCurrentGuess);
 
     // Decrease chances and update UI for both correct and incorrect guesses
     chancesLeft--;
