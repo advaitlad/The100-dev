@@ -269,30 +269,23 @@ function initializeTiles() {
 }
 
 function checkGuess(guess) {
-    const normalizedGuess = guess.trim().toLowerCase()
-        .normalize('NFKD') // Normalize special characters
-        .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-        .replace(/['"]/g, '') // Remove quotes
-        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, ''); // Remove punctuation
-    
     const categoryData = gameCategories[currentCategory].data.slice(0, 100); // Only check first 100 items
     
-    const countryIndex = categoryData.findIndex(
-        item => item.name.toLowerCase()
-            .normalize('NFKD')
-            .replace(/[\u0300-\u036f]/g, '')
-            .replace(/['"]/g, '')
-            .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '') === normalizedGuess
+    // Find matching item using our new checkAnswer function
+    const matchIndex = categoryData.findIndex(item => 
+        checkAnswer(guess, item.name)
     );
 
-    if (countryIndex === -1) {
-        return { score: 0, message: currentCategory === 'spotify' ? 
-            "This song is not in the top 100!" : 
-            "This country is not in the top 100!" 
+    if (matchIndex === -1) {
+        return { 
+            score: 0, 
+            message: currentCategory === 'spotify' ? 
+                "This song is not in the top 100!" : 
+                "This is not in the top 100!" 
         };
     }
 
-    const position = countryIndex + 1;
+    const position = matchIndex + 1;
     const score = position;
     
     return {
@@ -1589,4 +1582,101 @@ function closeModalsExcept(exceptModal) {
     // Remove any existing overlays
     const overlays = document.querySelectorAll('.overlay');
     overlays.forEach(overlay => overlay.remove());
+}
+
+// Add this after other utility functions
+function normalizeGuess(guess) {
+    // Convert to lowercase and trim whitespace
+    let normalized = guess.toLowerCase().trim();
+    
+    // Remove special characters and extra spaces
+    normalized = normalized
+        .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, " ")  // Replace punctuation with space
+        .replace(/\s+/g, " ")                           // Replace multiple spaces with single space
+        .trim();                                        // Trim again after replacements
+    
+    // Common abbreviations and alternative names
+    const alternatives = {
+        "us": "united states",
+        "usa": "united states",
+        "america": "united states",
+        "uk": "united kingdom",
+        "uae": "united arab emirates",
+        "holland": "netherlands",
+        "burma": "myanmar",
+    };
+    
+    return alternatives[normalized] || normalized;
+}
+
+function checkAnswer(guess, correctAnswer) {
+    // Normalize both the guess and correct answer
+    const normalizedGuess = normalizeGuess(guess);
+    const normalizedAnswer = normalizeGuess(correctAnswer);
+    
+    // Direct match after normalization
+    if (normalizedGuess === normalizedAnswer) {
+        return true;
+    }
+    
+    // Check if it's a close match (for minor typos)
+    const similarity = calculateStringSimilarity(normalizedGuess, normalizedAnswer);
+    if (similarity > 0.85) { // 85% similarity threshold
+        return true;
+    }
+    
+    return false;
+}
+
+// Add Levenshtein Distance calculation for similarity checking
+function calculateStringSimilarity(str1, str2) {
+    const track = Array(str2.length + 1).fill(null).map(() =>
+        Array(str1.length + 1).fill(null));
+    
+    for (let i = 0; i <= str1.length; i += 1) {
+        track[0][i] = i;
+    }
+    for (let j = 0; j <= str2.length; j += 1) {
+        track[j][0] = j;
+    }
+    
+    for (let j = 1; j <= str2.length; j += 1) {
+        for (let i = 1; i <= str1.length; i += 1) {
+            const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+            track[j][i] = Math.min(
+                track[j][i - 1] + 1, // deletion
+                track[j - 1][i] + 1, // insertion
+                track[j - 1][i - 1] + indicator // substitution
+            );
+        }
+    }
+    
+    const distance = track[str2.length][str1.length];
+    const maxLength = Math.max(str1.length, str2.length);
+    return (maxLength - distance) / maxLength;
+}
+
+// Update the existing guess handling to use the new check
+function handleGuess(guess) {
+    if (!guess) return;
+    
+    // Normalize the guess
+    const normalizedGuess = normalizeGuess(guess);
+    
+    // Check if already guessed
+    if (previousGuesses.some(g => normalizeGuess(g.name) === normalizedGuess)) {
+        showDuplicatePopup();
+        return;
+    }
+    
+    // Find matching item in current category data
+    const match = currentCategoryData.find(item => 
+        checkAnswer(guess, item.name)
+    );
+    
+    if (match) {
+        handleCorrectGuess(match);
+    } else {
+        handleIncorrectGuess(guess);
+    }
 } 
