@@ -1,5 +1,5 @@
 // Use the categories data from the external file
-const gameCategories = window.gameData;
+let gameCategories = window.gameData;
 
 // Global variables
 let currentCategory = 'area';
