@@ -1600,8 +1600,16 @@ function normalizeGuess(guess) {
         .replace(/\s+/g, " ")                           // Replace multiple spaces with single space
         .trim();                                        // Trim again after replacements
     
+    // Remove leading articles
+    normalized = normalized
+        .replace(/^the\s+/g, '')     // Remove 'the' from start
+        .replace(/^a\s+/g, '')       // Remove 'a' from start
+        .replace(/^an\s+/g, '')      // Remove 'an' from start
+        .trim();
+    
     // Common abbreviations and alternative names
     const alternatives = {
+        // Countries
         "us": "united states",
         "usa": "united states",
         "america": "united states",
@@ -1609,6 +1617,35 @@ function normalizeGuess(guess) {
         "uae": "united arab emirates",
         "holland": "netherlands",
         "burma": "myanmar",
+        
+        // Artists
+        "weeknd": "weeknd",
+        "the weeknd": "weeknd",
+        "j cole": "j. cole",
+        "dr dre": "dr. dre",
+        "post malone": "post malone",
+        "21 savage": "21 savage",
+        "lil nas x": "lil nas x",
+        "lil wayne": "lil wayne",
+        "jay z": "jay-z",
+        "jayz": "jay-z",
+        
+        // Apps
+        "whatsapp": "whatsapp messenger",
+        "messenger": "facebook messenger",
+        "fb messenger": "facebook messenger",
+        "ig": "instagram",
+        "insta": "instagram",
+        "snap": "snapchat",
+        "tiktok": "tik tok",
+        
+        // Movies/Shows
+        "stranger things": "stranger things",
+        "the stranger things": "stranger things",
+        "squid game": "squid game",
+        "the squid game": "squid game",
+        "wednesday": "wednesday",
+        "the wednesday": "wednesday"
     };
     
     return alternatives[normalized] || normalized;
