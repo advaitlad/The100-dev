@@ -957,18 +957,26 @@ function initializeCategoriesList() {
 
 function sortCategories(categories) {
     return categories.sort((a, b) => {
-        // First, separate unlocked and locked categories
+        // If user is logged in, only consider today's category for sorting
+        if (window.userManager?.currentUser) {
+            if (a.isTodaysCategory) return -1;
+            if (b.isTodaysCategory) return 1;
+            return 0;
+        }
+        
+        // For guest users:
+        // First separate unlocked and locked categories
         if (a.locked !== b.locked) {
             return a.locked ? 1 : -1;
         }
         
-        // If both are locked, prioritize today's category
+        // Within locked categories, prioritize today's category
         if (a.locked && b.locked) {
             if (a.isTodaysCategory) return -1;
             if (b.isTodaysCategory) return 1;
         }
         
-        // Keep original order for remaining categories
+        // Within unlocked categories, keep original order
         return 0;
     });
 }
@@ -977,7 +985,11 @@ function createCategoryItem(category) {
     const item = document.createElement('div');
     item.className = 'category-item';
     
-    if (category.locked) {
+    // For guest users, show lock status as is
+    // For logged-in users, all categories are unlocked
+    const isLocked = window.userManager?.currentUser ? false : category.locked;
+    
+    if (isLocked) {
         item.classList.add('locked');
     }
     
@@ -993,7 +1005,8 @@ function createCategoryItem(category) {
     text.className = 'text';
     text.textContent = category.name;
     
-    const lockIcon = category.locked ? '<div class="lock-icon"><i class="fas fa-lock"></i></div>' : '';
+    // Show lock icon based on locked status
+    const lockIcon = isLocked ? '<div class="lock-icon"><i class="fas fa-lock"></i></div>' : '';
     
     item.appendChild(icon);
     item.appendChild(text);
