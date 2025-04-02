@@ -2458,7 +2458,7 @@ button:hover {
 .todays-category .text::after {
     content: 'Added Today';
     font-size: 0.85em;
-    color: #0e3151;
+    color: #000000;
     font-weight: 500;
 }
 
