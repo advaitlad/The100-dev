@@ -375,13 +375,16 @@ function updateUI(guess, result) {
             // Set the hundredthRankedItem
             if (gameCategories[currentCategory]?.data) {
                 hundredthRankedItem = gameCategories[currentCategory].data[99];
-                console.log('Set hundredthRankedItem for celebration:', hundredthRankedItem);
             }
+            
+            // Disable input during celebration
+            guessInput.disabled = true;
+            submitButton.disabled = true;
             
             // Wait for tile reveal and score animations
             setTimeout(() => {
                 showHundredthCelebration();
-            }, 1000); // Wait for other animations to complete
+            }, 1000);
         }
     } else {
         // Incorrect guess - add to list with 0 points
@@ -402,7 +405,7 @@ function updateUI(guess, result) {
         showPopup('notTop100');
     }
 
-    // Show hints if the game is still going
+    // Show hints if the game is still going and we haven't found the 100th
     if (!foundHundredth) {
         const hints = getHundredthRankHint(guess);
         if (hints) {
@@ -410,16 +413,20 @@ function updateUI(guess, result) {
         }
     }
 
-    // Check if game is over (only if we haven't found the 100th item)
-    if (chancesLeft === 0 && !foundHundredth) {
-        // Disable input during animations
-        guessInput.disabled = true;
-        submitButton.disabled = true;
+    // Check if game is over
+    if (chancesLeft === 0) {
+        // If we haven't found the 100th item, show game over immediately
+        if (!foundHundredth) {
+            // Disable input during animations
+            guessInput.disabled = true;
+            submitButton.disabled = true;
 
-        // Wait for animations to complete before showing game over
-        setTimeout(() => {
-            showGameOver();
-        }, result.position ? 2000 : 1000);
+            // Wait for animations to complete before showing game over
+            setTimeout(() => {
+                showGameOver();
+            }, result.position ? 2000 : 1000);
+        }
+        // If we found the 100th item, game over will be handled after celebration
     }
 }
 
@@ -1733,12 +1740,9 @@ function handleGuess(guess) {
 }
 
 function showHundredthCelebration() {
-    console.log('Showing celebration for hundredth item:', hundredthRankedItem);
-    
     // Get the 100th ranked item if not already set
     if (!hundredthRankedItem && gameCategories[currentCategory]?.data) {
         hundredthRankedItem = gameCategories[currentCategory].data[99];
-        console.log('Set hundredthRankedItem:', hundredthRankedItem);
     }
     
     // Safety check
@@ -1769,18 +1773,22 @@ function showHundredthCelebration() {
         celebrationPopup.classList.add('show');
     }, 50);
     
-    // Remove after 2.5 seconds
+    // Remove after animation completes
     setTimeout(() => {
         celebrationPopup.classList.remove('show');
         setTimeout(() => {
             celebrationPopup.remove();
             
-            // If it was the last chance, show game over
-            if (chancesLeft === 0) {
+            // Re-enable input if we still have chances left
+            if (chancesLeft > 0) {
+                guessInput.disabled = false;
+                submitButton.disabled = false;
+            } else {
+                // If it was the last chance, show game over after celebration
                 showGameOver();
             }
         }, 300); // Wait for fade out animation
-    }, 2500); // Reduced from 3500 to 2500
+    }, 2500);
 }
 
 function getHundredthRankHint(guess) {
