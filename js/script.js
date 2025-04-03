@@ -1769,7 +1769,7 @@ function showHundredthCelebration() {
         celebrationPopup.classList.add('show');
     }, 50);
     
-    // Remove after 3.5 seconds
+    // Remove after 2.5 seconds
     setTimeout(() => {
         celebrationPopup.classList.remove('show');
         setTimeout(() => {
@@ -1780,7 +1780,7 @@ function showHundredthCelebration() {
                 showGameOver();
             }
         }, 300); // Wait for fade out animation
-    }, 3500);
+    }, 2500); // Reduced from 3500 to 2500
 }
 
 function getHundredthRankHint(guess) {
