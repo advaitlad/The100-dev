@@ -491,22 +491,19 @@ class FirebaseUserManager {
             }
 
             const userData = userDoc.data();
+            const currentStats = userData.stats || {};
             
             // Get dates in user's local timezone
             const now = new Date();
-            console.log('Current time:', now.toLocaleString());
-            
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             
             // Get the last played date
             let lastPlayedDate = null;
             if (userData.lastPlayedDate) {
                 lastPlayedDate = new Date(userData.lastPlayedDate);
-                console.log('Last played time:', lastPlayedDate.toLocaleString());
             }
 
-            // Initialize stats if they don't exist
-            const currentStats = userData.stats || {};
+            // Calculate streak
             let currentStreak = currentStats.currentStreak || 0;
             let bestStreak = currentStats.bestStreak || 0;
 
@@ -514,7 +511,6 @@ class FirebaseUserManager {
                 // First time playing
                 currentStreak = 1;
                 bestStreak = 1;
-                console.log('First time playing - setting streak to 1');
             } else {
                 // Convert last played date to start of that day in local timezone
                 const lastPlayedStart = new Date(
@@ -525,48 +521,32 @@ class FirebaseUserManager {
                 
                 // Calculate days between last play and now
                 const diffInDays = Math.floor((todayStart - lastPlayedStart) / (1000 * 60 * 60 * 24));
-                
-                console.log('Streak calculation details:');
-                console.log('- Last played (exact):', lastPlayedDate.toLocaleString());
-                console.log('- Last played (day start):', lastPlayedStart.toLocaleString());
-                console.log('- Current time (exact):', now.toLocaleString());
-                console.log('- Current day start:', todayStart.toLocaleString());
-                console.log('- Days difference:', diffInDays);
-                console.log('- Current streak before update:', currentStreak);
 
                 if (diffInDays === 0) {
                     // Same day, keep current streak
-                    console.log('Same day play - keeping streak at:', currentStreak);
                 } else if (diffInDays === 1) {
                     // Consecutive day
                     currentStreak++;
                     bestStreak = Math.max(bestStreak, currentStreak);
-                    console.log('Consecutive day - increasing streak to:', currentStreak);
                 } else {
                     // More than one day gap, reset streak
                     currentStreak = 1;
-                    console.log('Gap in play - resetting streak to 1');
                 }
             }
 
-            // Create a complete stats object that preserves existing stats
+            // Update only streak-related stats
             const updatedStats = {
                 ...currentStats,
-                currentStreak: currentStreak,
-                bestStreak: bestStreak,
-                // Remove gamesPlayed increment from here since it's handled in saveGameResult
-                gamesPlayed: currentStats.gamesPlayed || 0,
-                highScore: currentStats.highScore || 0,
-                categoryStats: currentStats.categoryStats || {}
+                currentStreak,
+                bestStreak
             };
 
-            // Update the document with the complete stats object
+            // Update the document with only streak changes
             await userRef.update({
                 lastPlayedDate: now.toISOString(),
-                stats: updatedStats
+                'stats.currentStreak': currentStreak,
+                'stats.bestStreak': bestStreak
             });
-
-            console.log('Streak updated successfully:', { currentStreak, bestStreak });
 
             // Update local data
             userData.stats = updatedStats;
@@ -576,7 +556,6 @@ class FirebaseUserManager {
 
         } catch (error) {
             console.error('Error updating streak:', error);
-            // Don't throw the error - we want to fail gracefully
         }
     }
 
