@@ -554,7 +554,8 @@ class FirebaseUserManager {
                 ...currentStats,
                 currentStreak: currentStreak,
                 bestStreak: bestStreak,
-                gamesPlayed: (currentStats.gamesPlayed || 0) + 1,
+                // Remove gamesPlayed increment from here since it's handled in saveGameResult
+                gamesPlayed: currentStats.gamesPlayed || 0,
                 highScore: currentStats.highScore || 0,
                 categoryStats: currentStats.categoryStats || {}
             };
