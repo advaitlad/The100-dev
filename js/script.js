@@ -934,6 +934,7 @@ function initializeCategoriesList() {
     // Sort categories into locked and unlocked groups
     const sortedCategories = sortCategories(Object.entries(gameCategories).map(([key, category]) => ({
         ...category,
+        key: key, // Add the key to the category object
         name: category.title || key,
         icon: getCategoryIcon(key)
     })));
@@ -941,10 +942,11 @@ function initializeCategoriesList() {
     sortedCategories.forEach((category) => {
         const item = createCategoryItem(category);
         item.setAttribute('tabindex', '0');
+        item.dataset.categoryKey = category.key; // Store the category key in the DOM
 
         item.addEventListener('click', () => {
-            if (category.name !== currentCategory) {
-                handleCategorySelection(category.name);
+            if (category.key !== currentCategory) {
+                handleCategorySelection(category.key);
             }
         });
 
@@ -1127,13 +1129,12 @@ function removeAllModals() {
 async function handleCategorySelection(categoryKey) {
     // Check if category exists in gameCategories
     if (!gameCategories[categoryKey]) {
-        console.error('Invalid category:', categoryKey);
+        console.error('Invalid category key:', categoryKey);
         return;
     }
 
     // Check if category is locked for guest users
     if (isGuestLockedCategory(categoryKey)) {
-        // Show login prompt (existing code)
         showLoginPrompt();
         return;
     }
@@ -1161,7 +1162,7 @@ async function handleCategorySelection(categoryKey) {
 function switchCategory(categoryKey) {
     // Safety check for category existence
     if (!gameCategories || !gameCategories[categoryKey]) {
-        console.error('Invalid category:', categoryKey);
+        console.error('Invalid category key:', categoryKey);
         return;
     }
 
@@ -1170,7 +1171,7 @@ function switchCategory(categoryKey) {
 
     // Update category title in UI
     const categoryTitleElement = document.getElementById('current-category');
-    if (categoryTitleElement && gameCategories[categoryKey].title) {
+    if (categoryTitleElement) {
         categoryTitleElement.textContent = gameCategories[categoryKey].title;
     }
 
