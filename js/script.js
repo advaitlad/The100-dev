@@ -1552,6 +1552,7 @@ function normalizeGuess(guess) {
         "us": "united states",
         "usa": "united states",
         "america": "united states",
+        "united states of america": "united states",
         "uk": "united kingdom",
         "gb": "united kingdom",
         "uae": "united arab emirates",

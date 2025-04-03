@@ -501,7 +501,7 @@ const netflixTop100 = [
     { name: "Along for the Ride", value: 32.00 },
     { name: "Choose or Die", value: 31.00 },
     { name: "Metal Lords", value: 30.00 },
-    { name: "Apollo 10½", value: 29.00 },
+    { name: "Apollo 10 1/2", value: 29.00 },
     { name: "Windfall", value: 28.00 },
     { name: "The Adam Project", value: 27.00 },
     { name: "The Weekend Away", value: 26.00 },
