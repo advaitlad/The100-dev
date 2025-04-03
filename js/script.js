@@ -1124,215 +1124,148 @@ function removeAllModals() {
     });
 }
 
-async function handleCategorySelection(category) {
+async function handleCategorySelection(categoryKey) {
+    // Check if category exists in gameCategories
+    if (!gameCategories[categoryKey]) {
+        console.error('Invalid category:', categoryKey);
+        return;
+    }
+
     // Check if category is locked for guest users
-    if (isGuestLockedCategory(category)) {
-        // First, remove any existing modals
-        removeAllModals();
-
-        // Create overlay
-        const overlay = document.createElement('div');
-        overlay.className = 'overlay';
-        overlay.style.zIndex = '1000'; // Ensure overlay is on top
-
-        // Show login prompt
-        const loginPrompt = document.createElement('div');
-        loginPrompt.className = 'confirm-modal';
-        loginPrompt.style.zIndex = '1001'; // Ensure modal is above overlay
-        loginPrompt.innerHTML = `
-            <div class="confirm-content">
-                <div class="modal-header">
-                    <div class="warning-icon">
-                        <i class="fas fa-lock"></i>
-                    </div>
-                    <h2>Login Required <span class="info-icon" style="display: inline-block; font-size: 16px; margin-left: 8px; cursor: pointer; color: #6b7280; position: relative; top: -2px;"><i class="fas fa-info-circle"></i></span></h2>
-                </div>
-                <div class="modal-footer">
-                    <button class="modal-btn cancel">
-                        <i class="fas fa-times"></i>
-                        Maybe Later
-                    </button>
-                    <button class="modal-btn confirm">
-                        <i class="fas fa-sign-in-alt"></i>
-                        Login / Sign Up (Free)
-                    </button>
-                </div>
-            </div>
-        `;
-
-        // Add CSS styles for the tooltip only if they don't exist
-        if (!document.getElementById('login-tooltip-styles')) {
-            const style = document.createElement('style');
-            style.id = 'login-tooltip-styles';
-            style.textContent = `
-                .modal-header {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: 16px;
-                    padding: 20px;
-                    text-align: center;
-                    position: relative;
-                }
-
-                .warning-icon {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 48px;
-                    height: 48px;
-                    background: #f3f4f6;
-                    border-radius: 50%;
-                    margin-bottom: 8px;
-                }
-
-                .warning-icon i {
-                    font-size: 24px;
-                    color: #374151;
-                }
-
-                .info-icon {
-                    display: inline-block;
-                    position: relative;
-                    transition: color 0.15s ease;
-                }
-
-                .info-icon:hover {
-                    color: #3b82f6;
-                }
-
-                .info-icon::after {
-                    content: 'This category is available for registered users only. Create an account or log in to unlock all categories 🎮';
-                    position: absolute;
-                    left: calc(100% + 12px);
-                    top: 50%;
-                    transform: translateY(-50%);
-                    background: #1a1a1a;
-                    color: #fff;
-                    padding: 8px 12px;
-                    border-radius: 6px;
-                    font-size: 11px !important;
-                    width: max-content;
-                    max-width: 200px;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-                    z-index: 1002;
-                    text-align: left;
-                    line-height: 1.4;
-                    font-weight: normal;
-                    white-space: normal;
-                    opacity: 0;
-                    visibility: hidden;
-                    pointer-events: none;
-                    transition: all 0.2s ease;
-                }
-
-                .info-icon::before {
-                    content: '';
-                    position: absolute;
-                    left: calc(100% + 8px);
-                    top: 50%;
-                    transform: translateY(-50%) rotate(45deg);
-                    width: 8px;
-                    height: 8px;
-                    background: #1a1a1a;
-                    opacity: 0;
-                    visibility: hidden;
-                    transition: all 0.2s ease;
-                    z-index: 1002;
-                }
-
-                .info-icon:hover::after,
-                .info-icon:hover::before {
-                    opacity: 1;
-                    visibility: visible;
-                }
-
-                .modal-footer {
-                    display: flex;
-                    gap: 12px;
-                    padding: 16px;
-                }
-
-                .modal-btn {
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    padding: 8px 16px;
-                    border-radius: 6px;
-                    border: none;
-                    font-size: 0.95em;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                }
-
-                .modal-btn.cancel {
-                    background: #f3f4f6;
-                    color: #374151;
-                }
-
-                .modal-btn.cancel:hover {
-                    background: #e5e7eb;
-                }
-
-                .modal-btn.confirm {
-                    background: #3b82f6;
-                    color: white;
-                }
-
-                .modal-btn.confirm:hover {
-                    background: #2563eb;
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        document.body.appendChild(overlay);
-        document.body.appendChild(loginPrompt);
-
-        // Add event listeners
-        const cancelBtn = loginPrompt.querySelector('.cancel');
-        const confirmBtn = loginPrompt.querySelector('.confirm');
-
-        const closePrompt = () => {
-            removeAllModals();
-        };
-
-        cancelBtn.addEventListener('click', closePrompt);
-        overlay.addEventListener('click', closePrompt);
-
-        confirmBtn.addEventListener('click', () => {
-            closePrompt();
-            // Show the login modal instead of profile modal
-            const loginModal = document.getElementById('login-modal');
-            if (loginModal) {
-                loginModal.classList.remove('hidden');
-                // Create a new overlay for the login modal
-                const loginOverlay = document.createElement('div');
-                loginOverlay.className = 'overlay active';
-                document.body.appendChild(loginOverlay);
-            }
-        });
-
-        // Don't close the panel since category didn't change
+    if (isGuestLockedCategory(categoryKey)) {
+        // Show login prompt (existing code)
+        showLoginPrompt();
         return;
     }
 
     // If it's the same category and not a guest-locked category, no need to do anything
-    if (currentCategory === category) {
+    if (currentCategory === categoryKey) {
         return;
     }
 
-    // If a game is in progress, show custom confirmation dialog
-    if (isGameInProgress() && currentCategory !== category) {
-        // Remove any existing modals first
+    // If a game is in progress, show confirmation dialog
+    if (isGameInProgress()) {
+        const shouldSwitch = await showCategoryChangeConfirmation();
+        if (!shouldSwitch) {
+            return;
+        }
+    }
+
+    // Switch to the selected category
+    switchCategory(categoryKey);
+
+    // Close the side panel
+    closeSidePanel();
+}
+
+function switchCategory(categoryKey) {
+    // Safety check for category existence
+    if (!gameCategories || !gameCategories[categoryKey]) {
+        console.error('Invalid category:', categoryKey);
+        return;
+    }
+
+    // Update current category
+    currentCategory = categoryKey;
+
+    // Update category title in UI
+    const categoryTitleElement = document.getElementById('current-category');
+    if (categoryTitleElement && gameCategories[categoryKey].title) {
+        categoryTitleElement.textContent = gameCategories[categoryKey].title;
+    }
+
+    // Reset game state
+    resetGame();
+
+    // Refresh categories list
+    initializeCategoriesList();
+}
+
+function closeSidePanel() {
+    const sidePanel = document.querySelector('.side-panel');
+    const gameContainer = document.querySelector('.game-container');
+    
+    if (sidePanel) {
+        sidePanel.classList.remove('active');
+    }
+    
+    if (gameContainer) {
+        gameContainer.classList.remove('side-panel-active');
+    }
+    
+    // Remove overlay if exists
+    const overlay = document.querySelector('.overlay');
+    if (overlay) {
+        overlay.remove();
+    }
+}
+
+// Helper function to show login prompt
+function showLoginPrompt() {
+    // Remove any existing modals
+    removeAllModals();
+
+    // Create and show login prompt modal
+    const overlay = document.createElement('div');
+    overlay.className = 'overlay';
+    overlay.style.zIndex = '1000';
+
+    const loginPrompt = document.createElement('div');
+    loginPrompt.className = 'confirm-modal';
+    loginPrompt.style.zIndex = '1001';
+    loginPrompt.innerHTML = `
+        <div class="confirm-content">
+            <div class="modal-header">
+                <div class="warning-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2>Login Required</h2>
+                <p>This category is only available for registered users.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel">
+                    <i class="fas fa-times"></i>
+                    Maybe Later
+                </button>
+                <button class="modal-btn confirm">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login / Sign Up
+                </button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(loginPrompt);
+
+    // Add event listeners
+    const cancelBtn = loginPrompt.querySelector('.cancel');
+    const confirmBtn = loginPrompt.querySelector('.confirm');
+
+    cancelBtn.addEventListener('click', removeAllModals);
+    confirmBtn.addEventListener('click', () => {
+        removeAllModals();
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal) {
+            loginModal.classList.remove('hidden');
+            const loginOverlay = document.createElement('div');
+            loginOverlay.className = 'overlay active';
+            document.body.appendChild(loginOverlay);
+        }
+    });
+}
+
+// Helper function to show category change confirmation
+function showCategoryChangeConfirmation() {
+    return new Promise((resolve) => {
+        // Remove any existing modals
         removeAllModals();
 
-        // Create overlay
+        // Create confirmation modal
         const overlay = document.createElement('div');
         overlay.className = 'overlay';
         overlay.style.zIndex = '1000';
 
-        // Create confirmation modal
         const confirmModal = document.createElement('div');
         confirmModal.className = 'confirm-modal';
         confirmModal.style.zIndex = '1001';
@@ -1361,51 +1294,28 @@ async function handleCategorySelection(category) {
         document.body.appendChild(overlay);
         document.body.appendChild(confirmModal);
 
-        // Create a promise to handle the user's choice
-        const userChoice = new Promise((resolve) => {
-            const cancelBtn = confirmModal.querySelector('.cancel');
-            const confirmBtn = confirmModal.querySelector('.confirm');
+        // Add event listeners
+        const cancelBtn = confirmModal.querySelector('.cancel');
+        const confirmBtn = confirmModal.querySelector('.confirm');
 
-            const closeModal = (result) => {
-                removeAllModals();
-                resolve(result);
-            };
+        const handleResponse = (result) => {
+            removeAllModals();
+            resolve(result);
+        };
 
-            cancelBtn.addEventListener('click', () => closeModal(false));
-            confirmBtn.addEventListener('click', () => closeModal(true));
-            overlay.addEventListener('click', () => closeModal(false));
+        cancelBtn.addEventListener('click', () => handleResponse(false));
+        confirmBtn.addEventListener('click', () => handleResponse(true));
+        overlay.addEventListener('click', () => handleResponse(false));
 
-            // Add keyboard support
-            const handleKeydown = (e) => {
-                if (e.key === 'Escape') {
-                    closeModal(false);
-                    document.removeEventListener('keydown', handleKeydown);
-                }
-            };
-            document.addEventListener('keydown', handleKeydown);
-        });
-
-        // Wait for user's choice
-        const shouldSwitch = await userChoice;
-        if (!shouldSwitch) {
-            return;
-        }
-    }
-
-    // Switch to the selected category
-    await switchCategory(category);
-
-    // Close the side panel since the category actually changed
-    const sidePanel = document.querySelector('.side-panel');
-    if (sidePanel) {
-        sidePanel.classList.remove('active');
-        // Also remove the side panel active class from game container
-
-        const gameContainer = document.querySelector('.game-container');
-        if (gameContainer) {
-            gameContainer.classList.remove('side-panel-active');
-        }
-    }
+        // Add keyboard support
+        const handleKeydown = (e) => {
+            if (e.key === 'Escape') {
+                handleResponse(false);
+                document.removeEventListener('keydown', handleKeydown);
+            }
+        };
+        document.addEventListener('keydown', handleKeydown);
+    });
 }
 
 function isGuestLockedCategory(category) {
@@ -1415,23 +1325,6 @@ function isGuestLockedCategory(category) {
     }
     // Return true if the category is locked and user is not logged in
     return gameCategories[category]?.locked === true;
-}
-
-function switchCategory(category) {
-    // Check if category exists in gameCategories
-    if (!gameCategories[category]) {
-        console.error('Invalid category:', category);
-        return;
-    }
-
-    currentCategory = category;
-    const categoryTitleElement = document.getElementById('current-category');
-    if (categoryTitleElement) {
-        categoryTitleElement.textContent = gameCategories[category].title;
-    }
-    
-    resetGame();
-    initializeCategoriesList();
 }
 
 function getCategoryIcon(category) {
