@@ -1792,6 +1792,8 @@ function showHundredthCelebration() {
             if (chancesLeft > 0) {
                 guessInput.disabled = false;
                 submitButton.disabled = false;
+                // Focus the input field after re-enabling
+                guessInput.focus();
             } else {
                 // If it was the last chance, show game over after celebration
                 showGameOver();
