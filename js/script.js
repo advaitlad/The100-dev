@@ -415,18 +415,27 @@ function updateUI(guess, result) {
 
     // Check if game is over
     if (chancesLeft === 0) {
-        // If we haven't found the 100th item, show game over immediately
-        if (!foundHundredth) {
-            // Disable input during animations
+        // If we found the 100th item earlier, wait for any ongoing celebration to finish
+        if (foundHundredth) {
+            // Only show game over if we're not currently celebrating
+            const celebrationPopup = document.querySelector('.celebration-popup');
+            if (!celebrationPopup) {
+                // Disable input during animations
+                guessInput.disabled = true;
+                submitButton.disabled = true;
+                
+                // Show game over immediately since celebration is done
+                showGameOver();
+            }
+            // If celebration is ongoing, game over will be handled after celebration in showHundredthCelebration
+        } else {
+            // If we haven't found the 100th item, show game over after animations
             guessInput.disabled = true;
             submitButton.disabled = true;
-
-            // Wait for animations to complete before showing game over
             setTimeout(() => {
                 showGameOver();
             }, result.position ? 2000 : 1000);
         }
-        // If we found the 100th item, game over will be handled after celebration
     }
 }
 
