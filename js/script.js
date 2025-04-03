@@ -1778,15 +1778,15 @@ function showHundredthCelebration() {
         setTimeout(() => {
             celebrationPopup.remove();
             
-            // Re-enable input if we still have chances left
-            if (chancesLeft > 0) {
+            // Only show game over if this was the last chance
+            if (chancesLeft === 0) {
+                showGameOver();
+            } else {
+                // Re-enable input if we still have chances left
                 guessInput.disabled = false;
                 submitButton.disabled = false;
                 // Focus the input field after re-enabling
                 guessInput.focus();
-            } else {
-                // If it was the last chance, show game over after celebration
-                showGameOver();
             }
         }, 300); // Wait for fade out animation
     }, 2500);
