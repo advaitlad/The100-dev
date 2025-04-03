@@ -417,7 +417,7 @@ function updateUI(guess, result) {
     }
 
     // Check if game is over (only if we haven't found the 100th item)
-    if (chancesLeft === 0 && !foundHundredth) {
+    if (chancesLeft === 0) {
         // Disable input during animations
         guessInput.disabled = true;
         submitButton.disabled = true;
