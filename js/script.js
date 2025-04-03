@@ -6,6 +6,8 @@ let currentCategory = 'area';
 let currentScore = 0;
 let chancesLeft = 5;
 let guessedCountries = [];
+let foundHundredth = false;
+let hundredthRankedItem;
 
 // Global DOM element references
 let guessInput, submitButton, chanceSpan, scoreSpan, guessesList;
@@ -321,7 +323,7 @@ function checkGuess(guess) {
 }
 
 function updateUI(guess, result) {
-    // Check for duplicate guess first, including variations
+    // Check for duplicate guess first
     const normalizedCurrentGuess = normalizeGuess(guess);
     const isDuplicate = guessedCountries.some(previousGuess => 
         normalizeGuess(previousGuess) === normalizedCurrentGuess
@@ -332,15 +334,15 @@ function updateUI(guess, result) {
         return;
     }
 
-    // Add the normalized guess to guessedCountries list
+    // Add the guess to guessedCountries list
     guessedCountries.push(normalizedCurrentGuess);
 
-    // Decrease chances and update UI for both correct and incorrect guesses
+    // Decrease chances and update UI
     chancesLeft--;
     chanceSpan.textContent = chancesLeft;
 
     if (result.position) {
-        // Correct guess
+        // Correct guess - reveal tile with animation
         revealTile(result.position);
         
         const listItem = document.createElement('li');
@@ -356,14 +358,25 @@ function updateUI(guess, result) {
         listItem.appendChild(progressBar);
         guessesList.prepend(listItem);
         
+        // Animate progress bar
         setTimeout(() => {
             progressBar.style.width = `${result.score}%`;
         }, 50);
 
-        // Update score
+        // Update score with animation
         const oldScore = currentScore;
         currentScore += result.score;
         animateScore(oldScore, currentScore);
+
+        // Check if this is the 100th ranked item
+        if (result.position === 100) {
+            foundHundredth = true;
+            
+            // Wait for tile reveal and score animations
+            setTimeout(() => {
+                showHundredthCelebration();
+            }, 1000); // Wait for other animations to complete
+        }
     } else {
         // Incorrect guess - add to list with 0 points
         const listItem = document.createElement('li');
@@ -383,17 +396,24 @@ function updateUI(guess, result) {
         showPopup('notTop100');
     }
 
-    // Check if game is over
-    if (chancesLeft === 0) {
+    // Show hints if the game is still going
+    if (!foundHundredth) {
+        const hints = getHundredthRankHint(guess);
+        if (hints) {
+            showHintsPopup(hints);
+        }
+    }
+
+    // Check if game is over (only if we haven't found the 100th item)
+    if (chancesLeft === 0 && !foundHundredth) {
         // Disable input during animations
         guessInput.disabled = true;
         submitButton.disabled = true;
 
-        // Wait for all animations to complete before showing game over
-        const animationDelay = result.position ? 2000 : 1000; // 2s for correct guesses to show tile reveal and score animations
+        // Wait for animations to complete before showing game over
         setTimeout(() => {
             showGameOver();
-        }, animationDelay);
+        }, result.position ? 2000 : 1000);
     }
 }
 
@@ -782,6 +802,7 @@ function resetGame() {
     currentScore = 0;
     chancesLeft = 5;
     guessedCountries = [];
+    foundHundredth = false;
     
     // Initialize tiles for the new category
     initializeTiles();
@@ -1387,6 +1408,7 @@ document.addEventListener('resetGame', (event) => {
     currentScore = 0;
     chancesLeft = 5;
     guessedCountries = [];
+    foundHundredth = false;
     
     // Reset score and chances display
     const scoreSpan = document.getElementById('score');
@@ -1702,4 +1724,70 @@ function handleGuess(guess) {
     } else {
         handleIncorrectGuess(guess);
     }
+}
+
+function showHundredthCelebration() {
+    // Create celebration popup
+    const celebrationPopup = document.createElement('div');
+    celebrationPopup.className = 'celebration-popup';
+    celebrationPopup.innerHTML = `
+        <div class="celebration-content">
+            <div class="celebration-icon">🎯</div>
+            <h2>Amazing!</h2>
+            <p>You found the 100th ranked item!</p>
+            <div class="celebration-item">${hundredthRankedItem.name}</div>
+            <div class="celebration-confetti">🎉 🎊 ✨</div>
+        </div>
+    `;
+    
+    // Add to body
+    document.body.appendChild(celebrationPopup);
+    
+    // Add animation class after a small delay to trigger transition
+    setTimeout(() => {
+        celebrationPopup.classList.add('show');
+    }, 50);
+    
+    // Remove after 3.5 seconds
+    setTimeout(() => {
+        celebrationPopup.classList.remove('show');
+        setTimeout(() => {
+            celebrationPopup.remove();
+            
+            // If it was the last chance, show game over
+            if (chancesLeft === 0) {
+                showGameOver();
+            }
+        }, 300); // Wait for fade out animation
+    }, 3500);
+}
+
+function getHundredthRankHint(guess) {
+    // Implementation of getHundredthRankHint function
+    // This is a placeholder and should be replaced with the actual implementation
+    return "This is a placeholder hint for the 100th ranked item.";
+}
+
+function showHintsPopup(hints) {
+    // Implementation of showHintsPopup function
+    // This is a placeholder and should be replaced with the actual implementation
+    console.log("Showing hints:", hints);
+}
+
+function showDuplicatePopup() {
+    // Implementation of showDuplicatePopup function
+    // This is a placeholder and should be replaced with the actual implementation
+    console.log("Showing duplicate popup");
+}
+
+function handleCorrectGuess(match) {
+    // Implementation of handleCorrectGuess function
+    // This is a placeholder and should be replaced with the actual implementation
+    console.log("Correct guess:", match);
+}
+
+function handleIncorrectGuess(guess) {
+    // Implementation of handleIncorrectGuess function
+    // This is a placeholder and should be replaced with the actual implementation
+    console.log("Incorrect guess:", guess);
 } 
