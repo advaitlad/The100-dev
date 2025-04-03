@@ -2539,6 +2539,15 @@ button:hover {
     font-weight: bold;
 }
 
+.celebration-value {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    color: #2ecc71;
+    font-size: 1.2rem;
+    margin: 0.5rem 0 1rem;
+}
+
 .celebration-confetti {
     font-size: 2rem;
     margin-top: 1rem;

@@ -372,6 +372,12 @@ function updateUI(guess, result) {
         if (result.position === 100) {
             foundHundredth = true;
             
+            // Set the hundredthRankedItem
+            if (gameCategories[currentCategory]?.data) {
+                hundredthRankedItem = gameCategories[currentCategory].data[99];
+                console.log('Set hundredthRankedItem for celebration:', hundredthRankedItem);
+            }
+            
             // Wait for tile reveal and score animations
             setTimeout(() => {
                 showHundredthCelebration();
@@ -1727,6 +1733,20 @@ function handleGuess(guess) {
 }
 
 function showHundredthCelebration() {
+    console.log('Showing celebration for hundredth item:', hundredthRankedItem);
+    
+    // Get the 100th ranked item if not already set
+    if (!hundredthRankedItem && gameCategories[currentCategory]?.data) {
+        hundredthRankedItem = gameCategories[currentCategory].data[99];
+        console.log('Set hundredthRankedItem:', hundredthRankedItem);
+    }
+    
+    // Safety check
+    if (!hundredthRankedItem) {
+        console.error('No hundredthRankedItem found');
+        return;
+    }
+    
     // Create celebration popup
     const celebrationPopup = document.createElement('div');
     celebrationPopup.className = 'celebration-popup';
@@ -1736,6 +1756,7 @@ function showHundredthCelebration() {
             <h2>Amazing!</h2>
             <p>You found the 100th ranked item!</p>
             <div class="celebration-item">${hundredthRankedItem.name}</div>
+            <div class="celebration-value">${formatValue(hundredthRankedItem.value, gameCategories[currentCategory].unit)}</div>
             <div class="celebration-confetti">🎉 🎊 ✨</div>
         </div>
     `;
