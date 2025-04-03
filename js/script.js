@@ -772,34 +772,31 @@ function showAllAnswers(fromGameOver = false) {
 }
 
 function resetGame() {
-    // Remove all overlays, modals and floating buttons
-    document.querySelectorAll('.overlay, .answers-modal, .game-over, .floating-buttons-container').forEach(element => {
-        if (element && element.parentNode) {
-            element.remove();
-        }
+    // Create and dispatch reset event
+    const resetEvent = new CustomEvent('resetGame', {
+        detail: { preserveTiles: false }
     });
-
-    // Reset game state
-    chancesLeft = 5;
-    currentScore = 0;
-    guessedCountries = [];
-    isRefreshConfirmationShown = false;
+    document.dispatchEvent(resetEvent);
     
-    // Reset UI
-    chanceSpan.textContent = chancesLeft;
-    scoreSpan.textContent = currentScore;
-    guessesList.innerHTML = '';
-    guessInput.value = '';
-    guessInput.disabled = false;
-    submitButton.disabled = false;
-
-    // Reset tiles
+    // Reset game state variables
+    currentScore = 0;
+    chancesLeft = 5;
+    guessedCountries = [];
+    
+    // Initialize tiles for the new category
     initializeTiles();
     
-    // Hide refresh confirmation modal if visible
-    const refreshConfirmModal = document.getElementById('refresh-confirm-modal');
-    if (refreshConfirmModal) {
-        refreshConfirmModal.classList.add('hidden');
+    // Enable input and submit button
+    const guessInput = document.getElementById('guess-input');
+    const submitButton = document.getElementById('submit-guess');
+    
+    if (guessInput) {
+        guessInput.value = '';
+        guessInput.disabled = false;
+    }
+    
+    if (submitButton) {
+        submitButton.disabled = false;
     }
 }
 
@@ -1421,8 +1418,18 @@ function isGuestLockedCategory(category) {
 }
 
 function switchCategory(category) {
+    // Check if category exists in gameCategories
+    if (!gameCategories[category]) {
+        console.error('Invalid category:', category);
+        return;
+    }
+
     currentCategory = category;
-    document.getElementById('current-category').textContent = gameCategories[category].title;
+    const categoryTitleElement = document.getElementById('current-category');
+    if (categoryTitleElement) {
+        categoryTitleElement.textContent = gameCategories[category].title;
+    }
+    
     resetGame();
     initializeCategoriesList();
 }
