@@ -1929,7 +1929,7 @@ function showTargetReachedPopup() {
     const content = `
         <div class="target-reached-content">
             <div class="target-reached-icon">🎉</div>
-            <h2>Congratulations!</h2>
+            <h2>Woohooooo!</h2>
             <p>You beat the target score!</p>
             <button class="close-target-popup ${isLastChance ? 'end-game-btn' : ''}">
                 ${isLastChance ? 'End Game' : 'Continue Playing'}
