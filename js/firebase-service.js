@@ -397,6 +397,12 @@ class FirebaseUserManager {
 
         if (profileToggle) profileToggle.innerHTML = toggleHTML;
 
+        // Update profile username in modal
+        const profileUsername = document.getElementById('profile-username');
+        if (profileUsername) {
+            profileUsername.textContent = this.currentUser ? (this.userData?.username || this.currentUser.email) : 'Username';
+        }
+
         // Enable the guess input and submit button
         const guessInput = document.getElementById('guess-input');
         const submitButton = document.getElementById('submit-guess');
