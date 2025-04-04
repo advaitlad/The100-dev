@@ -107,10 +107,7 @@
                     <h1>The 100</h1>
                 </div>
                 <div class="game-subtitle">
-                    Everyone knows the best or the second best but can you get the 100th?
-                </div>
-                <div class="game-subtitle">
-                    The closer you get to #100, the more points you get!
+                    The closer you guess to #100, the more points you get! Can you beat the target score?
                 </div>
                 <div class="category-badge">
                     <span class="category-label">CATEGORY</span>
@@ -125,6 +122,13 @@
                 <div class="stat-box">
                     <span class="stat-label">SCORE</span>
                     <span id="score" class="stat-value">0</span>
+                </div>
+            </div>
+            <div class="target-trophy">
+                <i class="fas fa-trophy"></i>
+                <div class="target-score-container">
+                    <div class="target-score-label">TARGET</div>
+                    <div class="target-score-value">200</div>
                 </div>
             </div>
             <button id="tutorial-btn" class="tutorial-btn">
@@ -180,16 +184,24 @@
                 <div class="tutorial-step">
                     <div class="step-number">1</div>
                     <h3>Choose a Category</h3>
-                    <p>Challenge yourself across our diverse categories! Whether you're exploring the world's largest
-                        countries, tracking global population trends, discovering social media superstars, ranking
-                        hit songs, or guessing the most downloaded mobile apps - there's something here to test
+                    <p>Test your knowledge across diverse categories - from global geography and population to trending
+                        apps, music, and social media stars!- there's something here to test
                         everyone's knowledge.</p>
                 </div>
 
                 <div class="tutorial-step">
                     <div class="step-number">2</div>
+                    <h3>Aim of the Game</h3>
+                    <p>The aim of the game is to <b><i>beat the target score</i></b> for the category. If you beat the
+                        target score, YOU WIN!</p>
+                    <p> But you can choose to continue the game and maximise your score.</p>
+                </div>
+
+                <div class="tutorial-step">
+                    <div class="step-number">2</div>
                     <h3>Scoring System</h3>
-                    <p>You have 5 chances to guess items from the top 100. Points are awarded based on the position you
+                    <p>You have 5 chances to guess items from the top 100. Points are awarded based on the position
+                        you
                         guess:</p>
                     <ul class="strategy-list">
                         <li>Position #1 = 1 point</li>
@@ -369,7 +381,8 @@
                     <i class="fas fa-exclamation-triangle"></i>
                 </div>
                 <h2>Wait!</h2>
-                <p>You have an active game in progress. Are you sure you want to refresh? Your progress will be lost.
+                <p>You have an active game in progress. Are you sure you want to refresh? Your progress will be
+                    lost.
                 </p>
             </div>
             <div class="modal-footer">

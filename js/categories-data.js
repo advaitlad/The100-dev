@@ -747,7 +747,8 @@ window.gameData = {
         data: countriesByArea,
         icon: 'fas fa-globe-americas',
         locked: false,
-        isTodaysCategory: false
+        isTodaysCategory: false,
+        targetScore: 200
     },
     population: {
         title: "Top 100 Countries by Population",
@@ -755,7 +756,8 @@ window.gameData = {
         data: countriesByPopulation,
         icon: 'fas fa-users',
         locked: false,
-        isTodaysCategory: false
+        isTodaysCategory: false,
+        targetScore: 200
     },
     spotifyArtists: {
         title: "Top 100 Most Streamed Artists on Spotify",
@@ -763,7 +765,8 @@ window.gameData = {
         data: spotifyArtists,
         icon: 'fab fa-spotify',
         locked: true,
-        isTodaysCategory: true
+        isTodaysCategory: true,
+        targetScore: 200
     },
     instagram: {
         title: "Top 100 Most Followed People on Instagram",
@@ -771,7 +774,8 @@ window.gameData = {
         data: instagramFollowers,
         icon: 'fab fa-instagram',
         locked: true,
-        isTodaysCategory: false
+        isTodaysCategory: false,
+        targetScore: 200
     },
     spotify: {
         title: "Top 100 Most Played Songs on Spotify",
@@ -779,7 +783,8 @@ window.gameData = {
         data: spotifyTop100,
         icon: 'fab fa-spotify',
         locked: true,
-        isTodaysCategory: false
+        isTodaysCategory: false,
+        targetScore: 200
     },
     netflix: {
         title: "Top 100 Most Watched Movies on Netflix",
@@ -787,7 +792,8 @@ window.gameData = {
         unit: 'M hours',
         icon: 'fa-solid fa-tv',
         locked: true,
-        isTodaysCategory: false
+        isTodaysCategory: false,
+        targetScore: 200
     },
     mobileApps: {
         title: "Top 100 Most Downloaded Mobile Apps in 2024",
@@ -795,7 +801,8 @@ window.gameData = {
         data: mobileApps,
         icon: 'fas fa-mobile-alt',
         locked: true,
-        isTodaysCategory: false
+        isTodaysCategory: false,
+        targetScore: 200
     }
 };
 

@@ -8,6 +8,8 @@ let chancesLeft = 5;
 let guessedCountries = [];
 let foundHundredth = false;
 let hundredthRankedItem;
+let targetScore = 500; // Default target score
+let hasReachedTarget = false;
 
 // Global DOM element references
 let guessInput, submitButton, chanceSpan, scoreSpan, guessesList;
@@ -339,6 +341,7 @@ function updateUI(guess, result) {
 
     // Decrease chances and update UI
     chancesLeft--;
+    console.log('Chances left after decrement:', chancesLeft); // Debug log
     chanceSpan.textContent = chancesLeft;
 
     if (result.position) {
@@ -416,16 +419,28 @@ function updateUI(guess, result) {
         }
     }
 
-    // Check if game is over (only if we haven't found the 100th item)
+    // Get current score and target score
+    const categoryData = gameCategories?.[currentCategory];
+    const categoryTargetScore = categoryData?.targetScore || targetScore;
+    const hasReachedTargetScore = currentScore >= categoryTargetScore;
+
+    // Check if game is over
     if (chancesLeft === 0) {
         // Disable input during animations
         guessInput.disabled = true;
         submitButton.disabled = true;
         
-        // Show game over after animations
-        setTimeout(() => {
-            showGameOver();
-        }, result.position ? 2000 : 1000);
+        // If target score was just reached on last chance, let the celebration popup handle game over
+        // Otherwise, follow normal game over flow
+        if (hasReachedTargetScore && currentScore - result.score < categoryTargetScore) {
+            // Target score was just reached on last chance - celebration popup will handle game over
+            return;
+        } else {
+            // Either target score wasn't reached, or it was reached earlier - follow normal game over flow
+            setTimeout(() => {
+                showGameOver();
+            }, result.position ? 2000 : 1000);
+        }
     }
 }
 
@@ -510,14 +525,30 @@ function animateScore(startScore, endScore) {
     const increment = (endScore - startScore) / steps;
     let currentStep = 0;
     
-    const animation = setInterval(() => {
+    // Clear any existing animation interval
+    if (window.scoreAnimationInterval) {
+        clearInterval(window.scoreAnimationInterval);
+    }
+    
+    window.scoreAnimationInterval = setInterval(() => {
         currentStep++;
         const currentValue = Math.round(startScore + (increment * currentStep));
-        scoreSpan.textContent = currentValue;
+        
+        // Update score display
+        if (scoreSpan) {
+            scoreSpan.textContent = currentValue;
+        }
+        
+        // Update trophy fill
+        updateTrophyFill(currentValue);
         
         if (currentStep >= steps) {
-            clearInterval(animation);
-            scoreSpan.textContent = endScore; // Ensure we end on the exact number
+            clearInterval(window.scoreAnimationInterval);
+            if (scoreSpan) {
+                scoreSpan.textContent = endScore; // Ensure we end on the exact number
+            }
+            updateTrophyFill(endScore); // Ensure final fill is exact
+            window.scoreAnimationInterval = null;
         }
     }, duration / steps);
 }
@@ -815,6 +846,10 @@ function resetGame() {
     chancesLeft = 5;
     guessedCountries = [];
     foundHundredth = false;
+    hasReachedTarget = false;
+    
+    // Reset trophy fill
+    updateTrophyFill(0);
     
     // Initialize tiles for the new category
     initializeTiles();
@@ -1207,6 +1242,9 @@ function switchCategory(categoryKey) {
     if (categoryTitleElement) {
         categoryTitleElement.textContent = gameCategories[categoryKey].title;
     }
+
+    // Reset trophy fill for new category
+    updateTrophyFill(0);
 
     // Reset game state
     resetGame();
@@ -1820,4 +1858,183 @@ function handleIncorrectGuess(guess) {
     // Implementation of handleIncorrectGuess function
     // This is a placeholder and should be replaced with the actual implementation
     console.log("Incorrect guess:", guess);
+}
+
+// Add these functions at the top level
+
+function createConfetti(x, y) {
+    const colors = ['#ffd700', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#00ffff'];
+    const confettiCount = 100; // Number of particles per burst
+    
+    // Create multiple bursts of confetti over time
+    for (let burst = 0; burst < 5; burst++) { // Increased from 3 to 5 bursts
+        setTimeout(() => {
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti-particle';
+                
+                // Calculate angle and distance for circular burst
+                const angle = (i / confettiCount) * 360 * (Math.random() + 0.5); // Random angle spread
+                const velocity = 15 + Math.random() * 15; // Random velocity between 15-30
+                const rad = angle * Math.PI / 180;
+                
+                // Calculate end position using polar coordinates
+                const xEnd = Math.cos(rad) * velocity * (Math.random() + 0.5) * 20;
+                const yEnd = Math.sin(rad) * velocity * (Math.random() + 0.5) * 20;
+                
+                // Random properties
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const rotation = Math.random() * 720 - 360; // Spin between -360 and 360 degrees
+                
+                confetti.style.setProperty('--color', color);
+                confetti.style.setProperty('--x-end', `${xEnd}px`);
+                confetti.style.setProperty('--y-end', `${yEnd}px`);
+                confetti.style.setProperty('--rotation', `${rotation}deg`);
+                
+                // Position the confetti at the trophy
+                confetti.style.left = `${x}px`;
+                confetti.style.top = `${y}px`;
+                
+                document.body.appendChild(confetti);
+                
+                // Remove the particle after animation
+                setTimeout(() => {
+                    confetti.remove();
+                }, 2000); // Increased from 1000ms to 2000ms to match new animation duration
+            }
+        }, burst * 300); // Increased delay between bursts from 150ms to 300ms
+    }
+}
+
+// Function to show celebration popup when target score is reached
+function showTargetReachedPopup() {
+    // First remove any existing target reached popup
+    const existingPopup = document.querySelector('.target-reached-popup');
+    if (existingPopup) {
+        existingPopup.remove();
+    }
+
+    // Create popup element
+    const popup = document.createElement('div');
+    popup.className = 'target-reached-popup show';
+    
+    // Get current category name
+    const categoryName = gameCategories[currentCategory]?.title || 'Current Category';
+    
+    // Check if this is the last chance
+    const isLastChance = chancesLeft === 0;
+    console.log('Is last chance:', isLastChance, 'Chances left:', chancesLeft); // Debug log
+    
+    // Create popup content
+    const content = `
+        <div class="target-reached-content">
+            <div class="target-reached-icon">🎉</div>
+            <h2>Congratulations!</h2>
+            <p>You beat ${categoryName}'s target score!</p>
+            <button class="close-target-popup ${isLastChance ? 'end-game-btn' : ''}">
+                ${isLastChance ? 'End Game' : 'Continue Playing'}
+            </button>
+        </div>
+    `;
+    
+    popup.innerHTML = content;
+    
+    // Add to body
+    document.body.appendChild(popup);
+    
+    // Add button click handler
+    const closeBtn = popup.querySelector('.close-target-popup');
+    closeBtn.addEventListener('click', () => {
+        popup.remove();
+        if (isLastChance) {
+            showGameOver();
+        }
+    });
+
+    return popup;
+}
+
+// Update the updateTrophyFill function to use the popup
+function updateTrophyFill(score) {
+    const trophy = document.querySelector('.target-trophy');
+    if (!trophy) return;
+
+    // Get the target score from the current category or use default
+    const categoryData = gameCategories?.[currentCategory];
+    const categoryTargetScore = categoryData?.targetScore || targetScore;
+    
+    // Calculate fill percentage (0-100)
+    const fillPercentage = Math.min(Math.floor((score / categoryTargetScore) * 100), 100);
+    
+    // Round to nearest 10 for our CSS classes
+    const roundedFill = Math.floor(fillPercentage / 10) * 10;
+    
+    // Update the fill level
+    trophy.setAttribute('data-fill', roundedFill.toString());
+
+    // Update or create target score display
+    let targetScoreLabel = trophy.querySelector('.target-score-label');
+    let targetScoreValue = trophy.querySelector('.target-score-value');
+    
+    if (!targetScoreLabel) {
+        targetScoreLabel = document.createElement('div');
+        targetScoreLabel.className = 'target-score-label';
+        targetScoreLabel.textContent = 'TARGET';
+        trophy.appendChild(targetScoreLabel);
+    }
+    
+    if (!targetScoreValue) {
+        targetScoreValue = document.createElement('div');
+        targetScoreValue.className = 'target-score-value';
+        trophy.appendChild(targetScoreValue);
+    }
+    
+    targetScoreValue.textContent = categoryTargetScore;
+
+    // Handle animations based on score percentage
+    if (fillPercentage >= 100) {
+        // Target reached celebration - only trigger if we haven't celebrated yet
+        trophy.classList.remove('near-target');
+        if (!hasReachedTarget) {
+            hasReachedTarget = true; // Set the flag
+            trophy.classList.add('target-reached');
+            
+            // Get trophy position for confetti
+            const rect = trophy.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            
+            // If this was the last chance, disable input immediately
+            if (chancesLeft === 1) {
+                const guessInput = document.getElementById('guess-input');
+                const submitButton = document.getElementById('submit-guess');
+                if (guessInput) guessInput.disabled = true;
+                if (submitButton) submitButton.disabled = true;
+            }
+
+            // Sequence the animations:
+            // 1. Wait for tile animation (1.5s)
+            // 2. Start confetti and wait for it to finish (2s)
+            // 3. Show congratulations popup
+            setTimeout(() => {
+                // Create confetti effect after tile animation
+                createConfetti(x, y);
+                
+                // Wait for confetti animation to play out before showing popup
+                setTimeout(() => {
+                    showTargetReachedPopup();
+                }, 2000); // Wait for confetti animation to complete
+                
+            }, 1500); // Wait for tile animation to complete
+        }
+    } else if (fillPercentage >= 80 && fillPercentage < 100) {
+        // Near target pulsing
+        trophy.classList.remove('target-reached');
+        trophy.classList.add('near-target');
+        hasReachedTarget = false; // Reset the flag if score drops below target
+    } else {
+        // Remove all special animations
+        trophy.classList.remove('near-target', 'target-reached');
+        hasReachedTarget = false; // Reset the flag if score drops below 80%
+    }
 } 
