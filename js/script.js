@@ -1923,7 +1923,6 @@ function showTargetReachedPopup() {
     
     // Check if this is the last chance
     const isLastChance = chancesLeft === 0;
-    console.log('Is last chance:', isLastChance, 'Chances left:', chancesLeft); // Debug log
     
     // Create popup content
     const content = `
@@ -1931,9 +1930,13 @@ function showTargetReachedPopup() {
             <div class="target-reached-icon">🎉</div>
             <h2>Woohooooo!</h2>
             <p>You beat the target score!</p>
-            <button class="close-target-popup ${isLastChance ? 'end-game-btn' : ''}">
-                ${isLastChance ? 'End Game' : 'Continue Playing'}
-            </button>
+            <div class="target-reached-buttons">
+                ${isLastChance ? 
+                    `<button class="close-target-popup end-game-btn">End Game</button>` :
+                    `<button class="close-target-popup continue-btn">Continue Playing</button>
+                     <button class="close-target-popup end-game-btn">End Game Now</button>`
+                }
+            </div>
         </div>
     `;
     
@@ -1942,13 +1945,15 @@ function showTargetReachedPopup() {
     // Add to body
     document.body.appendChild(popup);
     
-    // Add button click handler
-    const closeBtn = popup.querySelector('.close-target-popup');
-    closeBtn.addEventListener('click', () => {
-        popup.remove();
-        if (isLastChance) {
-            showGameOver();
-        }
+    // Add button click handlers
+    const buttons = popup.querySelectorAll('.close-target-popup');
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            popup.remove();
+            if (button.classList.contains('end-game-btn')) {
+                showGameOver();
+            }
+        });
     });
 
     return popup;

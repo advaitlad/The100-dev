@@ -106,8 +106,8 @@ class FirebaseUserManager {
             stats: {
                 gamesPlayed: 0,
                 highScore: 0,
-                currentStreak: 0,  // Initialize at 0
-                bestStreak: 0,     // Initialize at 0
+                currentStreak: 0,
+                targetScoreReached: 0,
                 categoryStats: {}
             },
             gameHistory: []
@@ -328,7 +328,7 @@ class FirebaseUserManager {
             }
 
             // Format the game result
-        const gameResult = {
+            const gameResult = {
                 category: category || 'unknown',
                 score: parseInt(score) || 0,
                 guesses: Array.isArray(guesses) ? guesses : [],
@@ -343,12 +343,18 @@ class FirebaseUserManager {
             const categoryStats = stats.categoryStats || {};
             const currentCategoryStats = categoryStats[category] || { highScore: 0, gamesPlayed: 0 };
 
+            // Check if target score was reached
+            const categoryData = window.gameData[category];
+            const targetScore = categoryData?.targetScore || 500;
+            const reachedTarget = score >= targetScore;
+
             // Prepare the update object
             const updateData = {
                 stats: {
                     ...stats,
                     gamesPlayed: (stats.gamesPlayed || 0) + 1,
                     highScore: Math.max(stats.highScore || 0, score),
+                    targetScoreReached: (stats.targetScoreReached || 0) + (reachedTarget ? 1 : 0),
                     categoryStats: {
                         ...categoryStats,
                         [category]: {
@@ -373,7 +379,7 @@ class FirebaseUserManager {
                 ...updateData,
                 gameHistory: [...(userData.gameHistory || []), gameResult]
             };
-        this.updateUI();
+            this.updateUI();
 
         } catch (error) {
             console.error('Error saving game result:', error);
@@ -462,15 +468,15 @@ class FirebaseUserManager {
             }
         }
 
-        // Update streaks
+        // Update current streak and target score reached
         const currentStreakElement = document.getElementById('current-streak');
-        const bestStreakElement = document.getElementById('best-streak');
+        const targetScoreReachedElement = document.getElementById('target-score-reached');
         
         if (currentStreakElement) {
             currentStreakElement.textContent = stats.currentStreak || 0;
         }
-        if (bestStreakElement) {
-            bestStreakElement.textContent = stats.bestStreak || 0;
+        if (targetScoreReachedElement) {
+            targetScoreReachedElement.textContent = stats.targetScoreReached || 0;
         }
     }
 
