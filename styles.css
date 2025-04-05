@@ -872,6 +872,37 @@ button:hover {
 
 .tutorial-content {
     padding-right: 10px;
+    position: relative;
+    /* Add this to position the close button */
+}
+
+.tutorial-content .close-modal {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    background: #2c3e50;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    z-index: 2001;
+    padding: 0;
+}
+
+.tutorial-content .close-modal:hover {
+    background: #34495e;
+    transform: rotate(90deg);
+}
+
+.tutorial-content .close-modal i {
+    line-height: 1;
 }
 
 .tutorial-content h2 {

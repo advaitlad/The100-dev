@@ -134,6 +134,10 @@ function initializeDOMElements() {
     const closeTutorialBtn = document.getElementById('close-tutorial');
     closeTutorialBtn?.addEventListener('click', closeTutorialModal);
 
+    // Add event listener for the 'x' close button
+    const closeTutorialXBtn = document.getElementById('close-tutorial-x');
+    closeTutorialXBtn?.addEventListener('click', closeTutorialModal);
+
     // Side panel events
     categoriesToggle?.addEventListener('click', () => {
         // Check if game over modal is visible
